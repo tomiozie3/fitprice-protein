@@ -39,6 +39,9 @@ export async function subscribeToNewsletter(input: SubscribeInput): Promise<Subs
       body: new URLSearchParams({
         EMAIL: input.email.trim(),
         FAVORITE_MAKER: input.favoriteMaker?.trim() ?? '',
+        // Brevoフォームのスパム対策ハニーポット。空で送るのが正しい。
+        email_address_check: '',
+        locale: 'ja',
       }),
     })
     return { ok: true }
