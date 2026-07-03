@@ -191,6 +191,16 @@
   },
   {
     "date": "2026-07-04",
+    "offerId": "lyft-wpc-900g-lyft-fit-com-products-wpc-chocolate-official-1",
+    "maker": "LYFT",
+    "effectivePriceYen": 6980,
+    "regularPriceYen": null,
+    "salePriceYen": null,
+    "hasSale": false,
+    "hasCoupon": false
+  },
+  {
+    "date": "2026-07-04",
     "offerId": "x-plosion-wpc-3000g-store-x-plosion-jp-view-item-000000000028-official-1",
     "maker": "X-PLOSION",
     "effectivePriceYen": 11990,

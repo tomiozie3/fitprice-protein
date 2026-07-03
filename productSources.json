@@ -165,6 +165,25 @@
     "couponSource": "none"
   },
   {
+    "maker": "LYFT",
+    "displayName": "Whey Protein WPC 900g チョコレート",
+    "productUrl": "https://lyft-fit.com/products/wpc-chocolate",
+    "fetchUrl": "https://lyft-fit.com/products/wpc-chocolate.js",
+    "proteinType": "WPC",
+    "sizeGrams": 900,
+    "expectedSizeGrams": 900,
+    "expectedFlavor": null,
+    "expectedSku": "S-PC-M-23-0001",
+    "storeName": "LYFT 公式ストア",
+    "storeType": "official",
+    "priority": 1,
+    "shippingYen": 0,
+    "freeShippingMinYen": null,
+    "couponDiscountYen": 0,
+    "couponLabel": null,
+    "couponSource": "none"
+  },
+  {
     "maker": "X-PLOSION",
     "displayName": "WPC ホエイプロテイン 3kg ミルクチョコレート",
     "productUrl": "https://store.x-plosion.jp/view/item/000000000028",

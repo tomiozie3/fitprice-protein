@@ -11,6 +11,7 @@ const parserByMaker: Record<string, StoreParser> = {
   xplosion: xplosionParser,
   valx: valxParser,
   grong: shopifyParser,
+  lyft: shopifyParser,
 }
 
 function normalizeMaker(maker: string) {

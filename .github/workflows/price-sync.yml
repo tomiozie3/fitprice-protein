@@ -21,6 +21,8 @@ jobs:
     env:
       # Sheets連携は任意。Secrets未設定ならスキップして価格更新とデプロイだけ行う。
       SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+      # メール送信も任意。BREVO_API_KEY未設定ならプレビューのみ（送信しない）。
+      BREVO_KEY: ${{ secrets.BREVO_API_KEY }}
 
     steps:
       - name: Checkout
@@ -50,6 +52,15 @@ jobs:
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           GOOGLE_SHEETS_SPREADSHEET_ID: ${{ secrets.GOOGLE_SHEETS_SPREADSHEET_ID }}
           GOOGLE_SHEETS_SHEET_NAME: ${{ vars.GOOGLE_SHEETS_SHEET_NAME || 'ProductOffers' }}
+
+      - name: Send price alert emails
+        # スケジュール実行時のみ送信（push時の再実行で二重送信しない）
+        if: ${{ github.event_name == 'schedule' && env.BREVO_KEY != '' }}
+        run: pnpm prices:alerts
+        env:
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          BREVO_SENDER_EMAIL: ${{ secrets.BREVO_SENDER_EMAIL }}
+          BREVO_SENDER_NAME: ${{ vars.BREVO_SENDER_NAME || 'FitPrice Protein' }}
 
       - name: Export public products.json
         run: pnpm prices:export

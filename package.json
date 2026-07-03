@@ -10,6 +10,7 @@
     "prices:fetch": "tsx scripts/fetch-prices.ts",
     "prices:sheets": "tsx scripts/write-to-sheets.ts",
     "prices:export": "tsx scripts/export-products.ts",
+    "prices:alerts": "tsx scripts/send-price-alerts.ts",
     "prices:sync": "pnpm prices:fetch && pnpm prices:sheets && pnpm prices:export"
   },
   "dependencies": {
