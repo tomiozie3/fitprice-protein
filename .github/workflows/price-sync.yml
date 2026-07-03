@@ -10,6 +10,11 @@ on:
 permissions:
   contents: write
 
+# 同時に複数走ったときにPagesデプロイが衝突しないよう直列化する
+concurrency:
+  group: price-sync-deploy
+  cancel-in-progress: false
+
 jobs:
   sync-prices:
     runs-on: ubuntu-latest
