@@ -1,0 +1,30 @@
+{
+  "name": "fitprice-protein",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "prices:fetch": "tsx scripts/fetch-prices.ts",
+    "prices:sheets": "tsx scripts/write-to-sheets.ts",
+    "prices:export": "tsx scripts/export-products.ts",
+    "prices:sync": "pnpm prices:fetch && pnpm prices:sheets && pnpm prices:export"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "dotenv": "^17.4.2",
+    "googleapis": "^173.0.0",
+    "react": "latest",
+    "react-dom": "latest",
+    "typescript": "latest",
+    "vite": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.1",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "tsx": "^4.22.4"
+  }
+}

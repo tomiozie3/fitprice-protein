@@ -1,0 +1,80 @@
+name: Sync product prices
+
+on:
+  schedule:
+    - cron: '0 18 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-prices:
+    runs-on: ubuntu-latest
+    env:
+      # Sheets連携は任意。Secrets未設定ならスキップして価格更新とデプロイだけ行う。
+      SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Fetch official store prices
+        run: pnpm prices:fetch
+
+      - name: Write to Google Sheets
+        if: ${{ env.SHEETS_CREDENTIALS != '' }}
+        run: pnpm prices:sheets
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_SHEETS_SPREADSHEET_ID: ${{ secrets.GOOGLE_SHEETS_SPREADSHEET_ID }}
+          GOOGLE_SHEETS_SHEET_NAME: ${{ vars.GOOGLE_SHEETS_SHEET_NAME || 'ProductOffers' }}
+
+      - name: Export public products.json
+        run: pnpm prices:export
+
+      - name: Commit generated products.json
+        uses: stefanzweifel/git-auto-commit-action@v6
+        with:
+          commit_message: 'chore: sync product prices'
+          file_pattern: 'data/product-offers.json data/price-history.json public/products.json public/price-history.json'
+
+      # GitHub Pagesで公開する場合: リポジトリのSettings > Pages で
+      # Source を "GitHub Actions" にすると以下のデプロイが有効になる。
+      # 自動コミット(GITHUB_TOKEN)は他のワークフローを起動しないため、
+      # 価格更新と同じワークフロー内でビルド・デプロイまで行う。
+      - name: Build site
+        run: pnpm build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy-pages:
+    needs: sync-prices
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
