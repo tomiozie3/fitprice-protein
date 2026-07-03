@@ -4,15 +4,26 @@ function stripTags(html: string) {
   return decodeHtml(html.replace(/<[^>]*>/g, '\n')).replace(/\s+/g, ' ').trim()
 }
 
-function extractNormalPurchaseBlock(html: string) {
-  const normalIndex = html.indexOf('通常購入')
-  if (normalIndex < 0) return null
-  const endCandidates = [
-    html.indexOf('カートに入れる', normalIndex + 1),
-    html.indexOf('商品説明', normalIndex + 1),
-  ].filter((index) => index > normalIndex)
-  const endIndex = endCandidates.length > 0 ? Math.min(...endCandidates) : normalIndex + 2500
-  return stripTags(html.slice(normalIndex, endIndex))
+// makeshopのページは同じ価格を税込(tax-included)と税抜(tax-excluded)の2ブロックで出す。
+// 税抜をセール価格と誤認しないよう、必ず税込ブロックだけを読む。
+// ブロック内: item-price=販売価格、original-price=定価。両者が異なるときだけセール。
+function extractTaxIncludedPrices(html: string) {
+  const start = html.indexOf('normal-price tax-included')
+  if (start < 0) return null
+  const end = html.indexOf('tax-excluded', start)
+  const segment = html.slice(start, end > start ? end : start + 1500)
+
+  const selling = yenFromUnknown(segment.match(/makeshop-item-price:1[^>]*>\s*([0-9][0-9,]*)/)?.[1] ?? null)
+  const original = yenFromUnknown(segment.match(/original-price[^>]*>\s*<span[^>]*>[¥￥]<\/span>\s*([0-9][0-9,]*)/)?.[1] ?? null)
+  if (selling === null && original === null) return null
+  return { selling, original }
+}
+
+function extractItemImage(html: string, productUrl: string) {
+  const itemId = productUrl.match(/item\/(\w+)/)?.[1] ?? null
+  const urls = [...html.matchAll(/https:\/\/makeshop-multi-images\.akamaized\.net\/[^"'\s]+\/itemimages\/[^"'\s]+\.(?:jpg|jpeg|png|webp)[^"'\s]*/gi)]
+    .map((match) => match[0])
+  return (itemId ? urls.find((url) => url.includes(itemId)) : undefined) ?? urls[0] ?? null
 }
 
 function detectSku(html: string) {
@@ -28,28 +39,31 @@ export const xplosionParser: StoreParser = {
   name: 'xplosion',
   parse(context) {
     const fallback = genericParser.parse(context)
-    const block = extractNormalPurchaseBlock(context.html)
-    if (!block) return fallback
-
-    const prices = [...block.matchAll(/[¥￥]\s*([0-9][0-9,]*)/g)]
-      .map((match) => yenFromUnknown(match[1]))
-      .filter((price): price is number => price !== null && price > 0)
-
-    const uniquePrices = [...new Set(prices)]
-    const regularPriceYen = uniquePrices.length > 0 ? Math.max(...uniquePrices) : null
-    const salePriceYen = uniquePrices.length > 1 ? Math.min(...uniquePrices) : null
+    const prices = extractTaxIncludedPrices(context.html)
+    const imageUrl = extractItemImage(context.html, context.source.productUrl)
     const detectedSku = detectSku(context.html)
-    const detectedSizeGrams = detectSizeGramsFromText(`${fallback.name ?? ''} ${block}`)
+    const detectedSizeGrams = detectSizeGramsFromText(fallback.name ?? '')
+
+    let price = fallback.price
+    if (prices && prices.selling !== null) {
+      const hasSale = prices.original !== null && prices.selling < prices.original
+      price = {
+        displayedPriceYen: null,
+        regularPriceYen: hasSale ? prices.original : prices.selling,
+        salePriceYen: hasSale ? prices.selling : null,
+        priceEvidence: 'xplosion tax-included price block',
+      }
+    }
+
+    // 「売り切れ」文言は非表示テンプレートに常時含まれるため文字列検索では判定できない。
+    // 購入ボタンのclass（instock on=在庫あり / instock off=売り切れ）で判定する。
+    const stockButton = context.html.match(/instock (on|off)"[^>]*>\s*(?:通常購入する|カートに入れる)/)
 
     return {
       ...fallback,
-      price: regularPriceYen !== null || salePriceYen !== null ? {
-        displayedPriceYen: null,
-        regularPriceYen,
-        salePriceYen,
-        priceEvidence: 'xplosion normal purchase block',
-      } : fallback.price,
-      inStock: /カートに入れる|通常購入する/.test(context.html) && !/SOLD OUT|売り切れ/.test(block),
+      imageUrl: imageUrl ?? fallback.imageUrl,
+      price,
+      inStock: stockButton ? stockButton[1] === 'on' : fallback.inStock,
       detectedSizeGrams,
       detectedFlavor: detectFlavor(fallback.name),
       detectedSku,

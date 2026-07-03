@@ -13,10 +13,10 @@
     "date": "2026-07-02",
     "offerId": "x-plosion-wpc-3000g-store-x-plosion-jp-view-item-000000000028-official-1",
     "maker": "X-PLOSION",
-    "effectivePriceYen": 11102,
+    "effectivePriceYen": 11990,
     "regularPriceYen": 11990,
-    "salePriceYen": 11102,
-    "hasSale": true,
+    "salePriceYen": null,
+    "hasSale": false,
     "hasCoupon": false
   },
   {
@@ -93,10 +93,10 @@
     "date": "2026-07-03",
     "offerId": "x-plosion-wpc-3000g-store-x-plosion-jp-view-item-000000000028-official-1",
     "maker": "X-PLOSION",
-    "effectivePriceYen": 11102,
+    "effectivePriceYen": 11990,
     "regularPriceYen": 11990,
-    "salePriceYen": 11102,
-    "hasSale": true,
+    "salePriceYen": null,
+    "hasSale": false,
     "hasCoupon": false
   }
 ]
