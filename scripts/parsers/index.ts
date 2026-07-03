@@ -1,6 +1,7 @@
 import type { ProductSource } from '../../src/types'
 import { genericParser, type StoreParser } from './generic'
 import { myproteinParser } from './myprotein'
+import { shopifyParser } from './shopify'
 import { valxParser } from './valx'
 import { xplosionParser } from './xplosion'
 
@@ -9,6 +10,7 @@ const parserByMaker: Record<string, StoreParser> = {
   'x-plosion': xplosionParser,
   xplosion: xplosionParser,
   valx: valxParser,
+  grong: shopifyParser,
 }
 
 function normalizeMaker(maker: string) {

@@ -225,7 +225,7 @@ async function fetchOffer(source: ProductSource, previous: ProductOffer | undefi
   }
 
   try {
-    const html = await fetchHtml(source.productUrl)
+    const html = await fetchHtml(source.fetchUrl ?? source.productUrl)
     const parser = getParser(source)
     const parsed = parser.parse({ html, source })
     const validationErrors = validateExpectedProduct(source, parsed)

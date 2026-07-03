@@ -98,5 +98,105 @@
     "salePriceYen": null,
     "hasSale": false,
     "hasCoupon": false
+  },
+  {
+    "date": "2026-07-04",
+    "offerId": "valx-wpc-3000g-shop-valx-jp-shop-products-p-wpc-sku-p-wpc-3kg-official-1",
+    "maker": "VALX",
+    "effectivePriceYen": 16980,
+    "regularPriceYen": null,
+    "salePriceYen": null,
+    "hasSale": false,
+    "hasCoupon": false
+  },
+  {
+    "date": "2026-07-04",
+    "offerId": "valx-wpc-1000g-shop-valx-jp-shop-products-p-wpc-sku-p-wpc-1kg-official-1",
+    "maker": "VALX",
+    "effectivePriceYen": 5970,
+    "regularPriceYen": null,
+    "salePriceYen": null,
+    "hasSale": false,
+    "hasCoupon": false
+  },
+  {
+    "date": "2026-07-04",
+    "offerId": "valx-soy-1000g-shop-valx-jp-shop-products-p-soy-sku-p-soy-1kg-official-1",
+    "maker": "VALX",
+    "effectivePriceYen": 3980,
+    "regularPriceYen": null,
+    "salePriceYen": null,
+    "hasSale": false,
+    "hasCoupon": false
+  },
+  {
+    "date": "2026-07-04",
+    "offerId": "myprotein-wpi-2500g-www-myprotein-jp-p-sports-nutrition-impact-whey-isolate-10530911-variation-10530-official-1",
+    "maker": "Myprotein",
+    "effectivePriceYen": 16590,
+    "regularPriceYen": 24975,
+    "salePriceYen": 16590,
+    "hasSale": true,
+    "hasCoupon": false
+  },
+  {
+    "date": "2026-07-04",
+    "offerId": "myprotein-wpi-1000g-www-myprotein-jp-p-sports-nutrition-impact-whey-isolate-10530911-variation-11890-official-1",
+    "maker": "Myprotein",
+    "effectivePriceYen": 7890,
+    "regularPriceYen": 11450,
+    "salePriceYen": 7890,
+    "hasSale": true,
+    "hasCoupon": false
+  },
+  {
+    "date": "2026-07-04",
+    "offerId": "myprotein-soy-1000g-www-myprotein-jp-p-sports-nutrition-soy-protein-isolate-10529701-variation-12341-official-1",
+    "maker": "Myprotein",
+    "effectivePriceYen": 2970,
+    "regularPriceYen": 5490,
+    "salePriceYen": 2970,
+    "hasSale": true,
+    "hasCoupon": false
+  },
+  {
+    "date": "2026-07-04",
+    "offerId": "grong-wpc-3000g-shop-grong-jp-products-whey-protein-standard-variant-51922766299499-official-1",
+    "maker": "GronG",
+    "effectivePriceYen": 16980,
+    "regularPriceYen": null,
+    "salePriceYen": null,
+    "hasSale": false,
+    "hasCoupon": false
+  },
+  {
+    "date": "2026-07-04",
+    "offerId": "grong-wpc-1000g-shop-grong-jp-products-whey-protein-standard-variant-51922766266731-official-1",
+    "maker": "GronG",
+    "effectivePriceYen": 5980,
+    "regularPriceYen": null,
+    "salePriceYen": null,
+    "hasSale": false,
+    "hasCoupon": false
+  },
+  {
+    "date": "2026-07-04",
+    "offerId": "grong-soy-1000g-shop-grong-jp-products-soy-protein-variant-51922758205803-official-1",
+    "maker": "GronG",
+    "effectivePriceYen": 2980,
+    "regularPriceYen": null,
+    "salePriceYen": null,
+    "hasSale": false,
+    "hasCoupon": false
+  },
+  {
+    "date": "2026-07-04",
+    "offerId": "x-plosion-wpc-3000g-store-x-plosion-jp-view-item-000000000028-official-1",
+    "maker": "X-PLOSION",
+    "effectivePriceYen": 11990,
+    "regularPriceYen": 11990,
+    "salePriceYen": null,
+    "hasSale": false,
+    "hasCoupon": false
   }
 ]

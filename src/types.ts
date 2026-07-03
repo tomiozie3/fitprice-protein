@@ -59,6 +59,9 @@ export type ProductSource = {
   // ストアのtitleはSEO用の長文が多く読みづらいため、掲載時は指定を推奨。
   displayName?: string
   productUrl: string
+  // 価格取得に使うURL。未指定ならproductUrlを取得する。
+  // Shopify系ストアは商品ページの .js エンドポイント（構造化JSON）を指定すると堅牢。
+  fetchUrl?: string
   proteinType: ProteinType
   sizeGrams: number
   expectedSizeGrams?: number

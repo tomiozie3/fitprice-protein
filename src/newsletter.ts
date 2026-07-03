@@ -1,3 +1,5 @@
+import { config } from './config'
+
 export type SubscribeResult = { ok: true } | { ok: false; message: string }
 
 export type SubscribeInput = {
@@ -21,11 +23,26 @@ export function validateEmail(email: string): SubscribeResult {
 export async function subscribeToNewsletter(input: SubscribeInput): Promise<SubscribeResult> {
   const result = validateEmail(input.email)
   if (!result.ok) return result
-  console.log('[FitPrice newsletter]', {
-    email: input.email.trim(),
-    favoriteMaker: input.favoriteMaker?.trim() || null,
-    timestamp: new Date().toISOString(),
-  })
-  // Next phase: connect Brevo, SES or a form service here.
-  return { ok: true }
+
+  // Brevo未接続の間は、登録できたと誤解させないよう正直に「準備中」を返す。
+  if (!config.brevoFormAction) {
+    return { ok: false, message: 'メール配信は現在準備中です。開始までもうしばらくお待ちください。' }
+  }
+
+  try {
+    // Brevoの購読フォームへ直接POST（静的サイトのためAPIキーは使わない）。
+    // no-corsのためレスポンスは読めない。バリデーション済みなので成功扱いにする。
+    await fetch(config.brevoFormAction, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        EMAIL: input.email.trim(),
+        FAVORITE_MAKER: input.favoriteMaker?.trim() ?? '',
+      }),
+    })
+    return { ok: true }
+  } catch {
+    return { ok: false, message: '登録に失敗しました。時間をおいてもう一度お試しください。' }
+  }
 }

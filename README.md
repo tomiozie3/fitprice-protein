@@ -98,6 +98,14 @@ pnpm build
 
 送料ルールは変わることがあるため、ブランド追加時と半年ごとに各ストアのガイドページで確認すること。
 
+### Shopify系ストアの追加方法（GronG等）
+
+Shopifyのストアは商品ページURLの末尾に `.js` を付けたエンドポイント（例: `https://shop.grong.jp/products/whey-protein-standard.js`）が全バリアントの価格・SKU・在庫を含むJSONを返す。`productSources.json` で `fetchUrl` にこのURLを、`productUrl` にユーザーが開く通常の商品ページ（`?variant=`でバリアント固定）を指定し、`expectedSku` でバリアントを特定する。パーサーは `scripts/parsers/shopify.ts`（メーカー名をparsers/index.tsに登録して使い回す）。
+
+### 検収ルール（必須）
+
+新ブランド・新商品を追加したら、公開前に**取得した価格・セール判定・画像を実際のストア画面と突き合わせる**こと。過去に税抜価格をセール価格と誤認した事例あり（X-PLOSION、修正済み）。
+
 ### 容量バリエーションの登録ルール
 
 メーカーは大容量ほどkg単価を安く設定するため、**各社とも「購入可能な最大容量（kg単価が最安のもの）」を必ず登録**します。1kgなどの小容量も併載してよい（大容量との単価差がそのまま見えるため）。同じ商品ページでも容量ごとに別エントリとして `productSources.json` に追加し、`expectedSku` で対象を固定します。
