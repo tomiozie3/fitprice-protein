@@ -204,12 +204,31 @@ function skippedOffer(source: ProductSource, previous: ProductOffer | undefined,
   return calculateOffer(source, parsed, previous, 'skipped', reason)
 }
 
-async function fetchHtml(url: string) {
+async function fetchHtml(url: string, attempt = 1): Promise<string> {
+  const MAX_ATTEMPTS = 3
+  try {
+    return await fetchHtmlOnce(url)
+  } catch (error) {
+    // 503等の一時的なエラーは間隔を空けて再試行（同一ドメイン連続アクセスのレート制限対策）
+    if (attempt >= MAX_ATTEMPTS) throw error
+    await sleep(3000 * attempt)
+    return fetchHtml(url, attempt + 1)
+  }
+}
+
+async function fetchHtmlOnce(url: string) {
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS)
   try {
     const response = await fetch(url, {
-      headers: { 'user-agent': USER_AGENT, accept: 'text/html,application/xhtml+xml' },
+      headers: {
+        'user-agent': USER_AGENT,
+        accept: 'text/html,application/xhtml+xml,application/json',
+        'accept-language': 'ja-JP,ja',
+        // Shopify等の多通貨ストアが海外IP（GitHub Actionsは米国）に外貨価格を返すのを防ぎ、
+        // 日本向け・日本円の表示を強制する。
+        cookie: 'localization=JP; cart_currency=JPY',
+      },
       signal: controller.signal,
     })
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
@@ -229,6 +248,14 @@ async function fetchOffer(source: ProductSource, previous: ProductOffer | undefi
     const parser = getParser(source)
     const parsed = parser.parse({ html, source })
     const validationErrors = validateExpectedProduct(source, parsed)
+
+    // 安全弁: プロテインで1kgあたり300円未満はありえない。
+    // 多通貨ストアが外貨価格を返した場合など、誤った激安表示を公開する前に弾く。
+    const candidatePrice = parsed.price.salePriceYen ?? parsed.price.regularPriceYen ?? parsed.price.displayedPriceYen
+    if (candidatePrice !== null && source.sizeGrams > 0 && candidatePrice / (source.sizeGrams / 1000) < 300) {
+      validationErrors.push(`価格が異常に低く通貨誤判定の疑い: ${candidatePrice}円/${source.sizeGrams}g`)
+    }
+
     const baseStatus = calculateStatus(parsed)
     const status = baseStatus === 'success' && validationErrors.length > 0 ? 'partial' : baseStatus
     const errorMessage = validationErrors.length > 0
